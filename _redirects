@@ -1,0 +1,8 @@
+# Four courses were taken down on 17 October. If their old files are still in
+# the repository, these rules send anyone (and Google) to the program listing
+# instead of letting the page 404. Harmless once the files are deleted.
+
+/the-muslim-narcissist.html                    /courses.html  301
+/study-of-classical-texts.html                 /courses.html  301
+/detailed-biography-of-muslim-personalities.html /courses.html  301
+/mentorship-curating-a-lasting-legacy.html      /courses.html  301
