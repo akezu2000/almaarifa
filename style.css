@@ -107,13 +107,16 @@ strong{font-weight:600; color:var(--teal)}
 }
 .brand{display:flex; align-items:center; flex:0 0 auto}
 .brand img{
-  height:84px; width:auto;       /* logo is 1:2.81 — keep it tall enough to read */
+  width:auto;                    /* height drives the width, never the reverse */
   display:block;
   object-fit:contain;
   filter:none !important;        /* never let a theme recolour the logo */
   background:transparent !important;
   mix-blend-mode:normal !important;
 }
+/* The mark is roughly square, so it needs far less height than the old tall
+   one to carry the same weight. Widths follow from the real file, 255 x 243. */
+.brand .brand-mark{height:72px}
 .nav{margin-left:auto; display:flex; align-items:center; gap:6px}
 .nav a{
   font-size:15px; font-weight:500; color:var(--ink);
@@ -394,7 +397,9 @@ details .body{padding:0 22px 20px; color:var(--muted); font-size:15.5px}
 .site-footer a:hover{color:var(--white)}
 .site-footer ul{list-style:none; padding:0; margin:0}
 .site-footer li{margin-bottom:9px}
-.footer-brand img{height:96px; width:auto; margin-bottom:18px}
+/* The mark is roughly square now, so it needs less height than the old tall
+   one did to read at the same weight in the footer. */
+.footer-brand img{height:76px; width:auto; margin-bottom:18px}
 .footer-bottom{
   margin-top:44px; padding-top:22px; border-top:1px solid rgba(247,244,239,.14);
   display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between;
@@ -439,7 +444,6 @@ details .body{padding:0 22px 20px; color:var(--muted); font-size:15.5px}
   .nav a{padding:13px 14px; font-size:16px}
   .nav .btn{margin-top:10px; justify-content:center}
   .nav-toggle{display:flex}
-  .brand img{height:68px}
 }
 @media (max-width:600px){
   body{font-size:16px}
@@ -447,7 +451,6 @@ details .body{padding:0 22px 20px; color:var(--muted); font-size:15.5px}
   .grid--2,.grid--4,.stats{grid-template-columns:1fr}
   .footer-grid{grid-template-columns:1fr}
   .hero-badge{position:static; margin-top:14px; max-width:none}
-  .brand img{height:58px}
   :root{--header-h:80px}
   .btn{width:100%}
   .btn-row{flex-direction:column}
@@ -473,6 +476,12 @@ details .body{padding:0 22px 20px; color:var(--muted); font-size:15.5px}
 .brand-tag{
   font-size:10.5px; font-weight:500; letter-spacing:.2em; text-transform:uppercase;
   color:var(--muted); margin-top:8px;
+}
+/* The one header line that must survive every breakpoint, including phones,
+   where .brand-tag is hidden below 900px. */
+.brand-for{
+  font-size:11.5px; font-weight:600; letter-spacing:.03em;
+  color:var(--teal); margin-top:6px;
 }
 
 /* ---------- 23. Course card fee ---------- */
@@ -512,13 +521,17 @@ details .body{padding:0 22px 20px; color:var(--muted); font-size:15.5px}
 
 @media (max-width:900px){
   .brand{gap:13px}
-  .brand-mark{height:64px}
+  .brand .brand-mark{height:58px}
   .brand-name{font-size:1.12rem; letter-spacing:.11em}
   .brand-tag{display:none}
+  /* With the tagline gone on small screens, this line is the only thing
+     telling a first-time visitor who the institute is for. Give it room. */
+  .brand-for{font-size:12px; margin-top:5px}
 }
 @media (max-width:600px){
-  .brand-mark{height:54px}
+  .brand .brand-mark{height:48px}
   .brand-name{font-size:1rem; letter-spacing:.08em}
+  .brand-for{font-size:12.5px; margin-top:4px}
 }
 
 /* ---------- 25. Fee & concession line ---------- */
