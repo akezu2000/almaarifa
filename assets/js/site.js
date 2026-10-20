@@ -34,17 +34,17 @@ var AM = (function () {
          start the digits a mobile number in that country may begin with
        Countries not listed are still checked for length, only not for shape. */
     PHONE_RULES: {
-      '92':  { len: 10, start: '3',        name: 'Pakistan',           eg: '321 1234567' },
-      '91':  { len: 10, start: '6789',     name: 'India',              eg: '98765 43210' },
-      '44':  { len: 10, start: '7',        name: 'Britain',            eg: '7700 900123' },
-      '1':   { len: 10, start: '23456789', name: 'America or Canada',  eg: '202 555 0123' },
-      '971': { len: 9,  start: '5',        name: 'the UAE',            eg: '50 123 4567' },
-      '966': { len: 9,  start: '5',        name: 'Saudi Arabia',       eg: '51 234 5678' },
-      '974': { len: 8,  start: '3567',     name: 'Qatar',              eg: '3312 3456' },
-      '965': { len: 8,  start: '569',      name: 'Kuwait',             eg: '5123 4567' },
-      '968': { len: 8,  start: '79',       name: 'Oman',               eg: '7123 4567' },
-      '61':  { len: 9,  start: '4',        name: 'Australia',          eg: '412 345 678' },
-      '27':  { len: 9,  start: '678',      name: 'South Africa',       eg: '71 234 5678' }
+      '92':  { len: 10, start: '3',        art: 'A', name: 'Pakistan',           eg: '321 1234567' },
+      '91':  { len: 10, start: '6789',     art: 'An', name: 'India',              eg: '98765 43210' },
+      '44':  { len: 10, start: '7',        art: 'A', name: 'Britain',            eg: '7700 900123' },
+      '1':   { len: 10, start: '23456789', art: 'An', name: 'America or Canada',  eg: '202 555 0123' },
+      '971': { len: 9,  start: '5',        art: 'A', name: 'UAE',            eg: '50 123 4567' },
+      '966': { len: 9,  start: '5',        art: 'A', name: 'Saudi Arabia',       eg: '51 234 5678' },
+      '974': { len: 8,  start: '3567',     art: 'A', name: 'Qatar',              eg: '3312 3456' },
+      '965': { len: 8,  start: '569',      art: 'A', name: 'Kuwait',             eg: '5123 4567' },
+      '968': { len: 8,  start: '79',       art: 'An', name: 'Oman',               eg: '7123 4567' },
+      '61':  { len: 9,  start: '4',        art: 'An', name: 'Australia',          eg: '412 345 678' },
+      '27':  { len: 9,  start: '678',      art: 'A', name: 'South Africa',       eg: '71 234 5678' }
     },
 
     phoneProblem: function (ccId, numId) {
@@ -74,11 +74,11 @@ var AM = (function () {
       if (rule) {
         var local2 = full.slice(cc.length);
         if (local2.length !== rule.len) {
-          return 'A ' + rule.name + ' number has ' + rule.len + ' digits after +' + cc +
+          return rule.art + ' ' + rule.name + ' number has ' + rule.len + ' digits after +' + cc +
                  ', for example ' + rule.eg + '.';
         }
         if (rule.start.indexOf(local2.charAt(0)) === -1) {
-          return 'A ' + rule.name + ' mobile number does not begin with ' + local2.charAt(0) +
+          return rule.art + ' ' + rule.name + ' mobile number does not begin with ' + local2.charAt(0) +
                  '. It should look like ' + rule.eg + '.';
         }
       }
