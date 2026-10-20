@@ -82,8 +82,12 @@
             </select>
           </div>
           <div class="field">
-            <label for="f-contact">Phone or email <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
-            <input id="f-contact" name="contact" type="text" placeholder="03xx-xxxxxxx or you@example.com">
+            <label for="f-phone">WhatsApp number <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+            <div class="phone-pair">
+              <input id="f-cc" class="phone-cc" type="tel" inputmode="numeric" value="+92" maxlength="5" aria-label="Country code">
+              <input id="f-phone" class="phone-local" type="tel" inputmode="tel" placeholder="321 1234567">
+            </div>
+            <p class="field-hint">Outside Pakistan, change the code on the left.</p>
           </div>
           <div class="field">
             <label for="f-msg">Message</label>

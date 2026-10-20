@@ -77,7 +77,11 @@
         </div>
         <div class="field">
           <label for="r-phone">WhatsApp number</label>
-          <input id="r-phone" type="tel" placeholder="03xx-xxxxxxx" required>
+          <div class="phone-pair">
+            <input id="r-cc" class="phone-cc" type="tel" inputmode="numeric" value="+92" maxlength="5" aria-label="Country code">
+            <input id="r-phone" class="phone-local" type="tel" inputmode="tel" placeholder="321 1234567" required>
+          </div>
+          <p class="field-hint">Outside Pakistan, change the code on the left.</p>
         </div>
         <div class="field">
           <label for="r-email">Email <span style="font-weight:400;color:var(--muted)">(optional)</span></label>

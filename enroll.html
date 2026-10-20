@@ -112,11 +112,15 @@
           </div>
           <div class="field">
             <label for="e-phone">WhatsApp number</label>
-            <input id="e-phone" type="tel" placeholder="03xx-xxxxxxx" required>
+            <div class="phone-pair">
+              <input id="e-cc" class="phone-cc" type="tel" inputmode="numeric" value="+92" maxlength="5" aria-label="Country code">
+              <input id="e-phone" class="phone-local" type="tel" inputmode="tel" placeholder="321 1234567" required>
+            </div>
+            <p class="field-hint">Outside Pakistan, change the code on the left.</p>
           </div>
           <div class="field">
-            <label for="e-email">Email address</label>
-            <input id="e-email" type="email" placeholder="you@example.com" required>
+            <label for="e-email">Email address <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+            <input id="e-email" type="email" placeholder="you@example.com">
             <p class="field-hint">We send the joining link to this address, and the link to
             the recordings too if the course is recorded.</p>
           </div>
@@ -203,7 +207,11 @@
             </div>
             <div class="field">
               <label for="t-phone">WhatsApp number</label>
-              <input id="t-phone" type="tel" placeholder="03xx-xxxxxxx" required>
+              <div class="phone-pair">
+                <input id="t-cc" class="phone-cc" type="tel" inputmode="numeric" value="+92" maxlength="5" aria-label="Country code">
+                <input id="t-phone" class="phone-local" type="tel" inputmode="tel" placeholder="321 1234567" required>
+              </div>
+              <p class="field-hint">Outside Pakistan, change the code on the left.</p>
             </div>
             <button class="btn btn--ghost" type="submit" style="width:100%">Ask us to call you</button>
             <p class="form-note" id="t-status"></p>
