@@ -29,6 +29,24 @@ var AM = (function () {
     /* Returns an empty string when the number can be dialled, or a sentence
        explaining what is wrong. Spaces, dashes and brackets are ignored; a
        leading zero is dropped, since people in Pakistan often type one. */
+    /* How a mobile number is shaped, country by country.
+         len   how many digits come after the country code
+         start the digits a mobile number in that country may begin with
+       Countries not listed are still checked for length, only not for shape. */
+    PHONE_RULES: {
+      '92':  { len: 10, start: '3',        name: 'Pakistan',           eg: '321 1234567' },
+      '91':  { len: 10, start: '6789',     name: 'India',              eg: '98765 43210' },
+      '44':  { len: 10, start: '7',        name: 'Britain',            eg: '7700 900123' },
+      '1':   { len: 10, start: '23456789', name: 'America or Canada',  eg: '202 555 0123' },
+      '971': { len: 9,  start: '5',        name: 'the UAE',            eg: '50 123 4567' },
+      '966': { len: 9,  start: '5',        name: 'Saudi Arabia',       eg: '51 234 5678' },
+      '974': { len: 8,  start: '3567',     name: 'Qatar',              eg: '3312 3456' },
+      '965': { len: 8,  start: '569',      name: 'Kuwait',             eg: '5123 4567' },
+      '968': { len: 8,  start: '79',       name: 'Oman',               eg: '7123 4567' },
+      '61':  { len: 9,  start: '4',        name: 'Australia',          eg: '412 345 678' },
+      '27':  { len: 9,  start: '678',      name: 'South Africa',       eg: '71 234 5678' }
+    },
+
     phoneProblem: function (ccId, numId) {
       var ccEl = document.getElementById(ccId);
       var nEl  = document.getElementById(numId);
@@ -49,12 +67,20 @@ var AM = (function () {
       if (full.length < 10) return 'That number looks too short. Please check it, including the country code.';
       if (full.length > 15) return 'That number looks too long. Please check it, including the country code.';
 
-      /* Pakistan has a fixed shape, so it is worth checking properly: most of
-         the sisters here are on +92. */
-      if (cc === '92') {
-        var pk = full.slice(2);
-        if (pk.length !== 10) return 'A Pakistan number has 10 digits after +92, for example 321 1234567.';
-        if (pk.charAt(0) !== '3') return 'A Pakistan mobile number starts with 3, for example 321 1234567.';
+      /* Most of the sisters here are on +92, but students join from all over,
+         so each country gets its own shape. Anything not listed is still
+         checked for length, just not for shape. */
+      var rule = AM.PHONE_RULES[cc];
+      if (rule) {
+        var local2 = full.slice(cc.length);
+        if (local2.length !== rule.len) {
+          return 'A ' + rule.name + ' number has ' + rule.len + ' digits after +' + cc +
+                 ', for example ' + rule.eg + '.';
+        }
+        if (rule.start.indexOf(local2.charAt(0)) === -1) {
+          return 'A ' + rule.name + ' mobile number does not begin with ' + local2.charAt(0) +
+                 '. It should look like ' + rule.eg + '.';
+        }
       }
       return '';
     },
