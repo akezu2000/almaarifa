@@ -6,6 +6,26 @@ var AM = (function () {
   return {
     cfg: cfg,
     thanks: 'JazakAllah khair, we have received it. We will contact you soon.',
+
+    /* Joins the country code box and the number box into one clean string of
+       digits, so the register always holds a complete international number.
+         +92  and 3211234567  ->  923211234567
+         +92  and 03211234567 ->  923211234567   (leading 0 dropped)
+         +92  and 923211234567 -> 923211234567   (already complete)
+       A number typed with no matching code is returned as typed. */
+    phone: function (ccId, numId) {
+      var ccEl = document.getElementById(ccId);
+      var nEl = document.getElementById(numId);
+      if (!nEl) return '';
+      var local = String(nEl.value || '').replace(/\D/g, '');
+      if (!local) return '';
+      var cc = ccEl ? String(ccEl.value || '').replace(/\D/g, '') : '';
+      if (!cc) return local;
+      if (local.indexOf(cc) === 0) return local;
+      if (local.charAt(0) === '0') local = local.slice(1);
+      return cc + local;
+    },
+
     send: function (rec, done, fail) {
       if (!cfg.sheet) { (fail || done)(); return; }
       fetch(cfg.sheet, {
@@ -111,14 +131,15 @@ var AM = (function () {
       if (!name) { eNote.textContent = 'Please add your name so we can reply to you.'; return; }
       var rec = {
         name: name,
-        whatsapp: get('f-contact'),
+        whatsapp: AM.phone('f-cc', 'f-phone'),
         email: '',
         city: '',
-        option: 'Contact enquiry: ' + get('f-topic'),
+        option: 'Enquiry: ' + get('f-topic'),
         fee: 0,
         notes: get('f-msg'),
         at: new Date().toISOString(),
-        type: 'enquiry'
+        type: 'General enquiry',
+        where: 'Contact page'
       };
       eBtn.disabled = true;
       eBtn.textContent = 'Sending…';
@@ -221,11 +242,12 @@ var AM = (function () {
       var nameEl = document.getElementById('e-name');
       var phoneEl = document.getElementById('e-phone');
       var emailEl = document.getElementById('e-email');
-      if (!nameEl.value.trim() || !phoneEl.value.trim() ||
-          (emailEl && !emailEl.value.trim())) {
+      /* Email is optional. Most of the sisters who come here use WhatsApp, not
+         email, so nothing may be made to depend on it being filled in. */
+      if (!nameEl.value.trim() || !phoneEl.value.trim()) {
         eFormNote.textContent =
-          'Please add your name, WhatsApp number and email address so we can reach you.';
-        if (emailEl && !emailEl.value.trim()) emailEl.focus();
+          'Please add your name and WhatsApp number so we can reach you.';
+        if (!phoneEl.value.trim()) phoneEl.focus(); else nameEl.focus();
         return;
       }
       var needsPay = (c.mode === 'paid' || c.zoom);
@@ -240,7 +262,7 @@ var AM = (function () {
       }
       var rec = {
         name: nameEl.value.trim(),
-        whatsapp: phoneEl.value.trim(),
+        whatsapp: AM.phone('e-cc', 'e-phone'),
         email: emailEl ? emailEl.value.trim() : '',
         city: '',
         option: c.name,
@@ -251,7 +273,8 @@ var AM = (function () {
                    ? ', Txn ID ' + document.getElementById('e-txn').value.trim()
                    : ', screenshot to follow') + ']' : ''),
         at: new Date().toISOString(),
-        type: c.mode === 'soon' ? 'notify' : 'enrollment'
+        type: c.mode === 'soon' ? 'Notify me request' : 'Course enrollment',
+        where: 'Enroll page'
       };
       eSubmit.disabled = true;
       eSubmit.textContent = 'Sending…';
@@ -291,17 +314,17 @@ var AM = (function () {
 
   function fee() { return Number(cfg.options[sel.value].fee) || 0; }
 
-  /* Free choices never show payment, the same rule the enrollment form follows. */
+  /* Joining the list is free; a paid choice is the only thing that shows payment. */
   function paint() {
     var f = fee();
     pay.style.display = f ? '' : 'none';
     note.innerHTML = f
-      ? 'Annual registration of <strong>PKR ' + f + '</strong> per year, renewed each year.'
-      : 'Free of charge, with no registration fee.';
+      ? 'Fee of <strong>PKR ' + f + '</strong> for this program.'
+      : 'Free, and nothing to pay.';
     status.textContent = f
-      ? 'Send your registration, then transfer PKR ' + f + ' and share the screenshot on WhatsApp.'
-      : 'Free programs carry no registration fee. Ruqyah and counseling are always free.';
-    submit.textContent = 'Send my registration';
+      ? 'Send your details, then transfer PKR ' + f + ' and share the screenshot on WhatsApp.'
+      : 'We use your details only to tell you what is opening at Al Ma\'arifa.';
+    submit.textContent = f ? 'Send my details' : 'Send my details';
   }
 
 
@@ -315,13 +338,15 @@ var AM = (function () {
     }
     var rec = {
       name: name,
-      whatsapp: phone,
+      whatsapp: AM.phone('r-cc', 'r-phone'),
       email: document.getElementById('r-email').value.trim(),
       city: document.getElementById('r-city').value.trim(),
       option: cfg.options[sel.value].label,
       fee: fee(),
       notes: document.getElementById('r-notes').value.trim(),
-      at: new Date().toISOString()
+      at: new Date().toISOString(),
+      type: 'Joined the list',
+      where: 'Register page'
     };
 
     /* No spreadsheet wired up yet. Still confirm, and ask them to email instead. */
@@ -398,10 +423,13 @@ var AM = (function () {
       return null;
     }
     return {
-      name: name, whatsapp: phone, email: '', city: '',
+      name: name, whatsapp: AM.phone('q-cc', 'q-phone'), city: '',
+      email: document.getElementById('q-email').value.trim(),
       option: 'Ruqyah session request', fee: 0,
       notes: document.getElementById('q-notes').value.trim(),
-      at: new Date().toISOString(), type: 'ruqyah'
+      at: new Date().toISOString(),
+      type: 'Ruqyah session request',
+      where: 'Ruqyah page'
     };
   });
 
@@ -415,9 +443,11 @@ var AM = (function () {
     }
     var course = document.getElementById('sum-name');
     return {
-      name: name, whatsapp: phone, email: '', city: '',
+      name: name, whatsapp: AM.phone('t-cc', 't-phone'), email: '', city: '',
       option: 'Prefer to talk first' + (course && course.textContent ? ': ' + course.textContent : ''),
-      fee: 0, notes: '', at: new Date().toISOString(), type: 'callback'
+      fee: 0, notes: '', at: new Date().toISOString(),
+      type: 'Call-back request',
+      where: 'Enroll page'
     };
   });
 })();
