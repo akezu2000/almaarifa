@@ -26,6 +26,52 @@ var AM = (function () {
       return cc + local;
     },
 
+    /* Returns an empty string when the number can be dialled, or a sentence
+       explaining what is wrong. Spaces, dashes and brackets are ignored; a
+       leading zero is dropped, since people in Pakistan often type one. */
+    phoneProblem: function (ccId, numId) {
+      var ccEl = document.getElementById(ccId);
+      var nEl  = document.getElementById(numId);
+      if (!nEl) return '';
+      var local = String(nEl.value || '').replace(/\D/g, '');
+      var cc    = ccEl ? String(ccEl.value || '').replace(/\D/g, '') : '';
+
+      if (!local) return 'Please add your WhatsApp number so we can reach you.';
+      if (!cc)    return 'Please add your country code in the box on the left.';
+
+      var full;
+      if (local.indexOf(cc) === 0) full = local;
+      else {
+        if (local.charAt(0) === '0') local = local.slice(1);
+        full = cc + local;
+      }
+
+      if (full.length < 10) return 'That number looks too short. Please check it, including the country code.';
+      if (full.length > 15) return 'That number looks too long. Please check it, including the country code.';
+
+      /* Pakistan has a fixed shape, so it is worth checking properly: most of
+         the sisters here are on +92. */
+      if (cc === '92') {
+        var pk = full.slice(2);
+        if (pk.length !== 10) return 'A Pakistan number has 10 digits after +92, for example 321 1234567.';
+        if (pk.charAt(0) !== '3') return 'A Pakistan mobile number starts with 3, for example 321 1234567.';
+      }
+      return '';
+    },
+
+    /* Email is always optional, but if someone types one it has to be real.
+       Empty is fine; anything else needs an @ and a dot in the last part. */
+    emailProblem: function (id) {
+      var el = document.getElementById(id);
+      if (!el) return '';
+      var v = String(el.value || '').trim();
+      if (!v) return '';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
+        return 'That email address does not look right. Please check it, or leave it blank.';
+      }
+      return '';
+    },
+
     send: function (rec, done, fail) {
       if (!cfg.sheet) { (fail || done)(); return; }
       fetch(cfg.sheet, {
@@ -129,6 +175,12 @@ var AM = (function () {
       };
       var name = get('f-name');
       if (!name) { eNote.textContent = 'Please add your name so we can reply to you.'; return; }
+      /* The contact form asks for a number but does not insist on one, so it
+         is only checked when something has actually been typed. */
+      if (document.getElementById('f-phone').value.trim()) {
+        var fp = AM.phoneProblem('f-cc', 'f-phone');
+        if (fp) { eNote.textContent = fp; return; }
+      }
       var rec = {
         name: name,
         whatsapp: AM.phone('f-cc', 'f-phone'),
@@ -250,6 +302,11 @@ var AM = (function () {
         if (!phoneEl.value.trim()) phoneEl.focus(); else nameEl.focus();
         return;
       }
+      var pp = AM.phoneProblem('e-cc', 'e-phone');
+      if (pp) { eFormNote.textContent = pp; phoneEl.focus(); return; }
+      var ep = AM.emailProblem('e-email');
+      if (ep) { eFormNote.textContent = ep; emailEl.focus(); return; }
+
       var needsPay = (c.mode === 'paid' || c.zoom);
       var methodName = '';
       if (needsPay) {
@@ -336,6 +393,10 @@ var AM = (function () {
       status.textContent = 'Please add your name and WhatsApp number so we can reach you.';
       return;
     }
+    var rpp = AM.phoneProblem('r-cc', 'r-phone');
+    if (rpp) { status.textContent = rpp; return; }
+    var rep = AM.emailProblem('r-email');
+    if (rep) { status.textContent = rep; return; }
     var rec = {
       name: name,
       whatsapp: AM.phone('r-cc', 'r-phone'),
@@ -422,6 +483,10 @@ var AM = (function () {
       note.textContent = 'Please add your name and WhatsApp number so we can reach you.';
       return null;
     }
+    var qpp = AM.phoneProblem('q-cc', 'q-phone');
+    if (qpp) { note.textContent = qpp; return null; }
+    var qep = AM.emailProblem('q-email');
+    if (qep) { note.textContent = qep; return null; }
     return {
       name: name, whatsapp: AM.phone('q-cc', 'q-phone'), city: '',
       email: document.getElementById('q-email').value.trim(),
@@ -441,6 +506,8 @@ var AM = (function () {
       note.textContent = 'Please add your name and number.';
       return null;
     }
+    var tpp = AM.phoneProblem('t-cc', 't-phone');
+    if (tpp) { note.textContent = tpp; return null; }
     var course = document.getElementById('sum-name');
     return {
       name: name, whatsapp: AM.phone('t-cc', 't-phone'), email: '', city: '',
