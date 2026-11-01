@@ -681,7 +681,7 @@ details .body{padding:0 22px 20px; color:var(--muted); font-size:15.5px}
 
 /* ---------- 32. Contact page publishes no WhatsApp number ----------
    Enquiries on that page go through the form, so the number is hidden there. */
-.page-contact .wa-only{display:none}
+.wa-only{display:none}   /* the number stays in the payment instructions, where it is genuinely needed */
 
 /* ---------- 33. Members-only lecture rows ---------- */
 .lecture--locked{cursor:default; opacity:.92}
@@ -731,3 +731,28 @@ details .body{padding:0 22px 20px; color:var(--muted); font-size:15.5px}
   color:var(--muted);
 }
 .lecture-fold .lecture-list{margin:14px 0 4px}
+
+
+/* ---------- 20. Course announcement ----------
+   A single band announcing what is open for registration. Kept still rather
+   than scrolling, so the message can actually be read; the badge carries a
+   slow pulse instead, which the eye catches without the band flashing.     */
+.announce{background:linear-gradient(96deg,#123c46 0%,#1a5c62 58%,#b08d3f 132%);color:#f7f4ef}
+.announce-inner{max-width:1180px;margin:0 auto;padding:15px 22px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px}
+.announce-badge{background:#e4c26a;color:#123c46;font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:6px 12px;border-radius:999px;white-space:nowrap;animation:announcePulse 2.6s ease-in-out infinite}
+@keyframes announcePulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(228,194,106,.5)}50%{opacity:.9;box-shadow:0 0 0 10px rgba(228,194,106,0)}}
+.announce-text{margin:0;flex:1 1 300px;min-width:0;line-height:1.34}
+.announce-text strong{display:block;font-family:'Lora',Georgia,serif;font-size:1.15rem;font-weight:600;color:#fff}
+.announce-tag{display:block;font-size:14.5px;color:rgba(247,244,239,.88)}
+.announce-when{display:block;font-size:13.5px;color:rgba(247,244,239,.76);margin-top:2px}
+.announce-actions{display:flex;align-items:center;gap:16px;margin-left:auto}
+.announce-cta{white-space:nowrap}
+.announce-qr{display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px;background:#fff;border-radius:8px;line-height:0}
+.announce-qr img{width:74px;height:74px;display:block}
+.announce-qr-cap{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#123c46;font-weight:700;line-height:1}
+@media (max-width:700px){
+  .announce-inner{padding:14px 18px;gap:14px}
+  .announce-actions{margin-left:0;width:100%;justify-content:space-between;gap:12px}
+}
+/* Anyone who has asked their device for less motion gets a still badge. */
+@media (prefers-reduced-motion:reduce){.announce-badge{animation:none}}
